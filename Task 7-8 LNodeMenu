@@ -1,0 +1,211 @@
+import java.awt.Color;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class LNodeMenu extends JFrame implements ActionListener, ItemListener, KeyListener {
+    private JLabel lblChoose, lblValue, lblPosition;
+    private JTextField txtValue, txtPosition;
+    private JComboBox cboChoose;
+    private JTextArea txtAreaUp, txtAreaDown;
+    private JButton btnProcess, btnClose;
+    private LNode myNode;
+    String hold = "";
+
+    LNodeMenu() {
+        myNode = new LNode();
+        lblChoose = new JLabel("Choose");
+        //Create menu List
+        String menu[] = {"Add At First", "Add At Position", "Add At Last",
+                         "Delete At First", "Delete At Position", "Delete At Last",
+                         "Get First", "Get At Position", "IndexAt", "Get Last", "addInMiddle", "deleteInMiddle"};
+        cboChoose = new JComboBox(menu);
+        //Load menu list to comboBox
+        txtAreaUp = new JTextArea();
+        txtAreaDown = new JTextArea();
+        btnProcess = new JButton("Process");
+        btnClose = new JButton("Close");
+        lblValue = new JLabel("Value");
+        lblPosition = new JLabel("Position");
+        txtValue = new JTextField();
+        txtPosition = new JTextField();
+        txtPosition.setEditable(false);
+        setTitle("LinkedList Application By Abrienne Capricho");
+        setSize(400, 300);
+        //Setbackground of the Frame
+        getContentPane().setBackground(new Color(100, 50, 90, 80));
+        setLayout(null);
+        //Sets the textfield or text area disabled for editing
+        txtAreaUp.setEditable(false);
+        txtAreaDown.setEditable(false);
+        //Observers for LNode
+        hold = "Empty\t: " + myNode.isEmpty() + "\tCurrent Size\t: " + myNode.currentSize();
+        txtAreaUp.setText(hold);
+        //Positioning each component to Frame
+        add(txtAreaUp).setBounds(20, 20, 330, 20);
+        add(new JScrollPane(txtAreaDown)).setBounds(20, 40, 330, 100);
+        add(lblChoose).setBounds(20, 140, 60, 20);
+        add(cboChoose).setBounds(80, 140, 150, 20);
+        add(btnProcess).setBounds(240, 140, 110, 60);
+        add(lblValue).setBounds(20, 160, 100, 20);
+        add(lblPosition).setBounds(20, 180, 100, 20);
+        add(txtValue).setBounds(80, 160, 150, 20);
+        add(txtPosition).setBounds(80, 180, 150, 20);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        //Invoke event -click
+        btnProcess.addActionListener(this);
+        cboChoose.addItemListener(this);
+        txtPosition.addKeyListener(this);
+        txtValue.addKeyListener(this);
+        btnProcess.setEnabled(false);
+    } // end of the constructor
+
+    public static void main(String[] args) {
+        new LNodeMenu();
+    } // end of main
+
+    public void actionPerformed(ActionEvent e) {
+        // Get selected index from comboBox
+        int i = cboChoose.getSelectedIndex();
+        int pos;
+
+        // Handle operations based on selection
+        if (i == 0) {
+            myNode.addAtFirst(txtValue.getText());
+        } else if (i == 1) {
+            pos = Integer.parseInt(txtPosition.getText());
+            myNode.addAtPosition(txtValue.getText(), pos);
+        } else if (i == 2) {
+            myNode.addAtLast(txtValue.getText());
+        } else if (i == 3) {
+            myNode.deleteAtFirst();
+        } else if (i == 4) {
+            pos = Integer.parseInt(txtPosition.getText());
+            myNode.deleteAtPosition(pos);
+        } else if (i == 5) {
+            myNode.deleteAtLast();
+        } else if (i == 6) {
+            JOptionPane.showMessageDialog(null, myNode.getFirst());
+        } else if (i == 7) {
+            pos = Integer.parseInt(txtPosition.getText());
+            JOptionPane.showMessageDialog(null, myNode.get(pos));
+        } if (i == 8) { // For IndexAt
+            String value = txtValue.getText();  // Assuming you're working with strings
+            int index = myNode.indexAt(value);  
+            if (index != -1) {
+                JOptionPane.showMessageDialog(null, "Index of value '" + value + "' is: " + index);
+            } else {
+                JOptionPane.showMessageDialog(null, "Value not found");
+            }
+        } else if (i == 9) { // Correct index for "Get Last"
+            JOptionPane.showMessageDialog(null, myNode.getLast());
+        } else if (i == 10) {
+            myNode.addInMiddle(txtValue.getText());
+        } else if (i == 11) {
+            myNode.deleteInMiddle();
+        }
+
+        // Update the linked list display
+        txtAreaDown.setText(myNode.traverse());
+        // Clear text fields
+        txtPosition.setText("");
+        txtValue.setText("");
+
+        // Update the status
+        hold = "Empty\t: " + myNode.isEmpty() + "\tCurrent Size\t: " + myNode.currentSize();
+        txtAreaUp.setText(hold);
+
+        btnProcess.setEnabled(false);
+    }
+
+    //Activate/Deactivate components (text fields) based on combo box selection
+    public void itemStateChanged(ItemEvent e) {
+        int i = cboChoose.getSelectedIndex();
+        
+        if (i == 0) {  // Add At First
+            disable(); 
+        } else if (i == 1) {  // Add At Position
+            enable(); 
+        } else if (i == 2) {  // Add At Last
+            disable();
+        } else if (i == 3) {  // Delete At First
+            disableAll();
+            btnProcess.setEnabled(true);
+        } else if (i == 4) {  // Delete At Position
+            disableAll();
+            btnProcess.setEnabled(true);
+            txtPosition.setEditable(true);
+        } else if (i == 5) {  // Delete At Last
+            disableAll();
+            btnProcess.setEnabled(true);
+        } else if (i == 6) {  // Get First
+            btnProcess.setEnabled(true);
+            disableAll();
+        } else if (i == 7) {  // Get At Position
+            enable();
+            btnProcess.setEnabled(true);
+            txtValue.setEditable(false);
+        } else if (i == 8) {  // IndexAt
+            enable(); // Assuming you need to enter a value to find its index
+            btnProcess.setEnabled(true);
+            txtPosition.setEditable(false);
+        } else if (i == 9) {  // Get Last
+            btnProcess.setEnabled(true);
+            disableAll();
+        } else if (i == 10) { // addInMiddle
+            enable();
+            btnProcess.setEnabled(true);
+        } else if (i == 11) { // deleteInMiddle
+            disableAll();
+            btnProcess.setEnabled(true);
+        }
+    }
+
+    public void enable() {
+        txtValue.setEditable(true);
+        txtPosition.setEditable(true);
+    }// end of method
+
+    public void disable() {
+        txtValue.setEditable(true);
+        txtPosition.setEditable(false);
+    } // end of method
+
+    public void disableAll() {
+        txtValue.setEditable(false);
+        txtPosition.setEditable(false);
+    }// end of method
+
+    public void keyPressed(KeyEvent arg0) {
+    }
+
+    //Activate/Deactivate button when correct data is entered in a textfield
+    public void keyReleased(KeyEvent e) {
+        if (e.getSource().equals(txtValue)) {
+            if (txtValue.getText().isEmpty()) {
+                btnProcess.setEnabled(false);
+            } else {
+                btnProcess.setEnabled(true);
+            }// end of if
+        } else if (e.getSource().equals(txtPosition)) {
+            if (txtPosition.getText().isEmpty()) {
+                btnProcess.setEnabled(false);
+            } else {
+                btnProcess.setEnabled(true);
+            }// end of if
+        } // end of if-else
+    } // end of method
+
+    public void keyTyped(KeyEvent e) {
+        if (e.getSource().equals(txtPosition)) {
+            if (!(Character.isDigit(e.getKeyChar()))) {
+                e.consume();
+            } // end of if
+        } else if (e.getSource().equals(txtValue)) {
+            if (!(Character.isAlphabetic(e.getKeyChar()))) {
+                e.consume();
+            }// end of if
+        } // end of if - else
+    } //end of main
+} //end of class
